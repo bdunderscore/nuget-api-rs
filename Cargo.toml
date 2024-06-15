@@ -2,6 +2,12 @@
 name = "nuget-client"
 version = "0.0.1"
 edition = "2021"
+authors = ["bd_ <bd_@nadena.dev>"]
+description = "A client for querying and resolving NuGet packages from rust"
+repository = "https://github.com/bdunderscore/nuget-client-rs"
+license = "MIT"
+license-file = "COPYING.md"
+keywords = ["client", "nuget", "packaging"]
 
 [dependencies]
 futures = "0.3.30"
