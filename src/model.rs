@@ -5,6 +5,9 @@ use crate::util::string_or_list;
 
 pub use version_range::{RangeSpecifier, VersionRange};
 
+/// The main package metadata structure.
+/// 
+/// See the [NuGet documentation](https://learn.microsoft.com/en-us/nuget/api/registration-base-url-resource#catalog-entry) for more information.
 #[derive(Debug, Deserialize, Clone, Serialize)]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]

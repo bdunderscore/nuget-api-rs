@@ -9,14 +9,19 @@ use ops::{get_package_versions::RegistrationLeaf, service_index::ServiceIndex};
 
 pub use err::{Result, Error};
 
+/// A client for a nuget registry
 pub struct NugetRegistry {
     client: reqwest::Client,
-    registry_base_url: Url,
-    pub index: HashMap<String, Url>,
+    index: HashMap<String, Url>,
 }
 
 impl NugetRegistry {
-    pub async fn connect(index_url: Url) -> reqwest::Result<Self> {
+    /// Connects to a nuget registry.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `index_url` - The URL of the registry's index.json file.
+    pub async fn connect(index_url: Url) -> Result<Self> {
         let client = reqwest::Client::builder()
             .gzip(true)
             .build()?;
@@ -29,13 +34,31 @@ impl NugetRegistry {
             index2.insert(resource.type_, url);
         }
 
-        Ok(Self { client, registry_base_url: index_url, index: index2 })
+        Ok(Self { client, index: index2 })
     }
 
-    pub async fn get_package_version(&self, package_name: &str) -> Result<Option<ops::package_base_address::PackageBaseAddressResponse>> {
-        ops::package_base_address::execute(self, package_name).await
+    /// Returns all known versions for a package.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `package_name` - The name of the package.
+    /// 
+    /// # Returns
+    /// 
+    /// A list of all known versions for the package, or None if the package is not found.
+    pub async fn get_package_versions(&self, package_name: &str) -> Result<Option<Vec<String>>> {
+        ops::package_base_address::execute(self, package_name).await.map(|resp| resp.map(|resp| resp.versions))
     }
 
+    /// Returns metadata for all versions of a package.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `package_name` - The name of the package.
+    /// 
+    /// # Returns
+    /// 
+    /// A stream of metadata for each version of the package.
     pub async fn get_package_registrations<'a>(&'a self, package_name: &str) -> Result<impl futures::Stream<Item=Result<RegistrationLeaf>> + Send + Unpin + 'a> {
         ops::get_package_versions::execute(self, package_name).await
     }
