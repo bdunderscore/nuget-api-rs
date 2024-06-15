@@ -2,7 +2,7 @@
 use std::pin::pin;
 
 use futures::{StreamExt, TryStreamExt};
-use nuget_api::NugetRegistry;
+use nuget_client::NugetRegistry;
 
 #[tokio::main]
 async fn main() {
